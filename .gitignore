@@ -9,3 +9,11 @@ Desktop.ini
 .vscode/
 .idea/
 
+# Binarios de documentación técnica importados localmente
+documentation/**/*.pdf
+documentation/**/*.zip
+documentation/**/*.rar
+documentation/**/*.7z
+documentation/**/*.step
+documentation/**/*.stp
+documentation/**/*.dxf
