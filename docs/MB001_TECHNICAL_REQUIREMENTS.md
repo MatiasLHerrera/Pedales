@@ -14,6 +14,8 @@ Este documento no autoriza el inicio de KiCad, no define componentes todavía no
 
 Las páginas citadas son las numeradas por el propio documento. Se usa `N/A` para documentos Markdown y páginas web sin numeración. Las clasificaciones y estados se limitan a los valores definidos para esta tarea.
 
+**Interpretación de clasificación y estado:** `VERIFIED` significa que el contenido de la fila es coherente con las fuentes citadas. Cuando la clasificación es `PROPOSED`, ese estado no implica aprobación del proyecto; la propuesta continúa pendiente de decisión humana salvo que exista otra fila o decisión explícita que la apruebe.
+
 | Código | Fuente |
 |---|---|
 | PRJ-REQ | `docs/REQUIREMENTS.md`, Requisitos aprobados inicialmente / Requisitos pendientes |
@@ -38,7 +40,8 @@ Las páginas citadas son las numeradas por el propio documento. Se usa `N/A` par
 |---|---|---|---|---|---|---|---:|---|
 | ESP-001 | Identificación | La mainboard debe usar exactamente el módulo ESP32-S3-WROOM-1-N16R8. | APPROVED_PROJECT_DECISION | VERIFIED | PRJ-DEC; ESP-MOD | DEC-001; Module Overview, Table 1-1 | N/A; 3 | No sustituir por otra variante sin una decisión explícita documentada. |
 | ESP-002 | Memoria | La variante debe aportar 16 MB de Flash Quad SPI y 8 MB de PSRAM Octal SPI. | MANDATORY_MANUFACTURER | VERIFIED | ESP-MOD | Module Overview, Table 1-1 | 3 | Corresponde específicamente a N16R8. |
-| ESP-003 | Alimentación | VDD33 debe permanecer entre 3,0 V y 3,6 V; el valor nominal del proyecto es 3,3 V. | MANDATORY_MANUFACTURER | VERIFIED | ESP-MOD; PRJ-REQ | Recommended Operating Conditions; Requisitos aprobados | 27; N/A | No confundir el máximo recomendado de 3,6 V con una tensión nominal. |
+| ESP-003A | Alimentación | VDD33 debe permanecer entre 3,0 V y 3,6 V. | MANDATORY_MANUFACTURER | VERIFIED | ESP-MOD | Recommended Operating Conditions | 27 | No confundir el límite superior de 3,6 V con una tensión nominal. |
+| ESP-003B | Alimentación | MB-001 alimentará el módulo con 3,3 V nominales. | APPROVED_PROJECT_DECISION | VERIFIED | PRJ-REQ | Requisitos aprobados | N/A | La tolerancia y caída de la fuente deberán mantener el módulo dentro de ESP-003A. |
 | ESP-004 | Alimentación | La fuente externa del módulo debe poder entregar como mínimo 0,5 A. | MANDATORY_MANUFACTURER | VERIFIED | ESP-MOD | Recommended Operating Conditions, Table 6-2 | 27 | Es el mínimo indicado para la alimentación del módulo, no el presupuesto total de la placa. |
 | ESP-005 | Alimentación | Se debe reservar margen por encima de 0,5 A y desacoplamiento local para transitorios de RF. | RECOMMENDED_MANUFACTURER | VERIFIED | ESP-HDG | Power Supply | 5 | El margen exacto y el regulador siguen pendientes. |
 | ESP-006 | Reset | EN no debe quedar flotante; nivel bajo deshabilita/resetea el módulo y nivel alto lo habilita. | MANDATORY_MANUFACTURER | VERIFIED | ESP-MOD | Pin Definitions; Peripheral Pin Configurations | 11; 25 | EN corresponde a CHIP_PU del SoC. |
@@ -64,7 +67,7 @@ Las páginas citadas son las numeradas por el propio documento. Se usa `N/A` par
 | ESP-026 | Antena | El keepout de antena debe implementarse como restricción real en todas las capas cuando el PCB sea autorizado. | APPROVED_PROJECT_DECISION | VERIFIED | PRJ-RULE | Reglas para futuros PCB | N/A | La regla de todas las capas proviene del proyecto; los dibujos del fabricante definen el área geométrica. |
 | ESP-030 | Antena | La ausencia de cobre, pistas y componentes bajo el área de antena debe validarse contra Figure 26 y Figure 11-1 antes de congelar el layout. | PENDING_VALIDATION | REQUIRES_REVIEW | ESP-HDG; ESP-MOD | Keepout Zone for Module Antenna; PCB Land Pattern | 31; 45 | Las fuentes locales dibujan el área, pero el texto extraído no dice literalmente “sin cobre en todas las capas”. |
 | ESP-027 | Montaje | Deben respetarse MSL 3, ventana de 168 h tras apertura en condiciones indicadas y un único ciclo de reflow si se usa reflow. | MANDATORY_MANUFACTURER | VERIFIED | ESP-MOD | Recommended PCB Land Pattern and Reflow Profile | 47 | El proyecto prevé montaje manual; el proceso concreto requiere revisión. |
-| ESP-028 | Errata | La revisión/PW del módulo debe identificarse; lotes anteriores a Date Code 2219 o PW-2022-06 pueden no disponer de descarga USB-OTG. | MANDATORY_MANUFACTURER | REQUIRES_REVIEW | ESP-ERR | USBOTG-4289 | 9 | USB Serial/JTAG es el workaround oficial; no se conoce todavía el lote físico. |
+| ESP-028 | Errata/Adquisición | La revisión/PW del módulo debe registrarse durante compra y bring-up; lotes anteriores a Date Code 2219 o PW-2022-06 pueden no disponer de descarga USB-OTG. | PENDING_VALIDATION | REQUIRES_REVIEW | ESP-ERR | USBOTG-4289 | 9 | USB Serial/JTAG es el workaround oficial. Esta verificación no bloquea el esquemático porque la ruta principal del proyecto será USB Serial/JTAG, no descarga USB-OTG. |
 | ESP-029 | Errata/Firmware | La versión de ESP-IDF seleccionada debe incluir los workarounds oficiales aplicables a cache, RTC y configuración analógica de sleep. | PENDING_VALIDATION | PENDING | ESP-ERR | CACHE-126, RTC-126, ANALOG-160 | 5–7 | La versión exacta de ESP-IDF no se selecciona aquí. |
 
 ## 2. CS4272
@@ -73,9 +76,12 @@ Las páginas citadas son las numeradas por el propio documento. Se usa `N/A` par
 |---|---|---|---|---|---|---|---:|---|
 | COD-001 | Identificación | La mainboard debe usar el CODEC estéreo CS4272. | APPROVED_PROJECT_DECISION | VERIFIED | PRJ-DEC; CS-DS | DEC-002; General Description | N/A; 2 | ADC y DAC estéreo de hasta 24 bits y 192 kHz. |
 | COD-002 | Encapsulado | El diseño debe usar el encapsulado 28-pin TSSOP de cuerpo 4,4 mm definido por el fabricante. | MANDATORY_MANUFACTURER | VERIFIED | CS-DS | Ordering Information; Package Dimensions | 2; 46 | Compatible con soldadura manual bajo proceso controlado; footprint aún no autorizado. |
-| COD-003 | Alimentación analógica | VA debe operar entre 4,75 V y 5,25 V; el valor aprobado del proyecto es 5 V. | MANDATORY_MANUFACTURER | VERIFIED | CS-DS; PRJ-REQ | Specified Operating Conditions; Requisitos aprobados | 9; N/A | No alimentar VA con 3,3 V. |
-| COD-004 | Alimentación digital | VD debe operar entre 3,1 V y 5,25 V; el valor aprobado del proyecto es 3,3 V. | MANDATORY_MANUFACTURER | VERIFIED | CS-DS; PRJ-REQ | Specified Operating Conditions; Requisitos aprobados | 9; N/A | VD alimenta la sección digital interna y se documenta separado de VL. |
-| COD-005 | Alimentación lógica | VL debe operar entre 2,37 V y 5,25 V; el valor aprobado del proyecto es 3,3 V. | MANDATORY_MANUFACTURER | VERIFIED | CS-DS; PRJ-REQ | Specified Operating Conditions; Requisitos aprobados | 9; N/A | VL fija el dominio de las E/S digitales; no confundir con VD. |
+| COD-003A | Alimentación analógica | VA debe permanecer entre 4,75 V y 5,25 V. | MANDATORY_MANUFACTURER | VERIFIED | CS-DS | Specified Operating Conditions | 9 | No alimentar VA con 3,3 V. |
+| COD-003B | Alimentación analógica | MB-001 alimentará VA con una rama nominal de 5 V. | APPROVED_PROJECT_DECISION | VERIFIED | PRJ-REQ | Requisitos aprobados | N/A | El filtrado y las caídas de tensión deben conservar el rango de COD-003A. |
+| COD-004A | Alimentación digital | VD debe permanecer entre 3,1 V y 5,25 V. | MANDATORY_MANUFACTURER | VERIFIED | CS-DS | Specified Operating Conditions | 9 | VD alimenta la sección digital interna y se documenta separado de VL. |
+| COD-004B | Alimentación digital | MB-001 alimentará VD con 3,3 V nominales. | APPROVED_PROJECT_DECISION | VERIFIED | PRJ-REQ | Requisitos aprobados | N/A | Puede compartir regulación con otros dominios de 3,3 V, pero debe conservar desacoplamiento propio. |
+| COD-005A | Alimentación lógica | VL debe permanecer entre 2,37 V y 5,25 V. | MANDATORY_MANUFACTURER | VERIFIED | CS-DS | Specified Operating Conditions | 9 | VL fija el dominio de las E/S digitales; no confundir con VD. |
+| COD-005B | Alimentación lógica | MB-001 alimentará VL con 3,3 V nominales para compatibilidad directa con la lógica del ESP32-S3. | APPROVED_PROJECT_DECISION | VERIFIED | PRJ-REQ | Requisitos aprobados | N/A | Mantener desacoplamiento propio aunque comparta la fuente de 3,3 V. |
 | COD-006 | Masa | AGND y DGND deben conectarse a una referencia de masa de baja impedancia conforme al esquema y layout; no deben quedar flotantes. | MANDATORY_MANUFACTURER | VERIFIED | CS-DS | Pin Descriptions; Grounding and Power Supply Decoupling | 6; 34 | La estrategia física de unión se decidirá con el layout. |
 | COD-007 | Desacoplamiento | VA, VD y VL deben usar cada uno 0,1 µF + 1 µF según Figure 8, con 0,1 µF lo más próximo posible al pin. | RECOMMENDED_MANUFACTURER | VERIFIED | CS-DS | Typical Connection Diagram; Grounding and Power Supply Decoupling | 23; 34 | Con VD=3,3 V separado no corresponde montar el resistor opcional de 5,1 Ω desde VA. |
 | COD-008 | VCOM | VCOM debe desacoplarse como indica Figure 8 y tratarse como referencia de alta impedancia: nominal 0,48 × VA, máximo 1 µA de fuente/sumidero e impedancia típica 25 kΩ. | MANDATORY_MANUFACTURER | VERIFIED | CS-DS | DC Electrical Characteristics; Typical Connection Diagram | 17; 23 | No usar VCOM como fuente de alimentación. |
@@ -102,7 +108,7 @@ Las páginas citadas son las numeradas por el propio documento. Se usa `N/A` par
 | COD-029 | Diagnóstico | El firmware de bring-up debe leer el registro Chip ID 08h y registrar el valor antes de habilitar audio. | PROPOSED | VERIFIED | CS-DS | Chip ID, Register 08h | 44 | Prueba el bus, pero el datasheet codifica revisiones A y B ambas como 0; no identifica de forma inequívoca la revisión. |
 | COD-030 | Layout | Clocks y señales digitales deben mantenerse alejados de VCOM, FILT+, entradas y salidas analógicas; desacoplamientos y retornos deben minimizar el recorrido. | RECOMMENDED_MANUFACTURER | VERIFIED | CS-DS | Grounding and Power Supply Decoupling | 34 | La CDB4272 se usa solo como evidencia de implementación, no como obligación normativa. |
 | COD-031 | Inicialización | El firmware no debe depender del valor por defecto de PDN: debe escribir explícitamente 03h en registro 07h durante la secuencia recomendada. | PENDING_VALIDATION | CONFLICT_FOUND | CS-DS | Register Quick Reference; Power Down; Control Port Interface | 37; 44; 35 | La tabla rápida muestra PDN por defecto 0, mientras §8.7.5 dice que está set por defecto. |
-| COD-032 | I2C | Como propuesta conservadora, AD0 se conectaría a AGND para seleccionar 0x10; no debe aprobarse hasta revisar la contradicción de niveles. | PROPOSED | REQUIRES_REVIEW | CS-DS | I2C Mode; Absolute Maximum Ratings | 36; 9 | Evita aplicar 5 V al pin con VL=3,3 V, pero sigue siendo una propuesta. |
+| COD-032 | I2C | AD0 debe conectarse a AGND para seleccionar la dirección I2C de 7 bits 0x10. | APPROVED_PROJECT_DECISION | VERIFIED | CS-DS | I2C Mode; Absolute Maximum Ratings | 36; 9 | Evita aplicar 5 V al pin con VL=3,3 V. La contradicción de AD0=VA permanece documentada, pero no bloquea esta decisión. |
 | COD-033 | Referencias | Las menciones a “VREF” en §5.7 deben interpretarse con cautela como FILT+, que es el nombre usado por pinout y Figure 8. | PENDING_VALIDATION | CONFLICT_FOUND | CS-DS | Grounding and Power Supply Decoupling; Pin Descriptions | 34; 5–6 | Inconsistencia terminológica del datasheet. |
 | COD-034 | DAC | Para full-scale de salida deben prevalecer AOUT± y la tabla DAC; Figure 15 rotula erróneamente la ecuación con AIN±. | PENDING_VALIDATION | CONFLICT_FOUND | CS-DS | DAC Analog Characteristics; Output Connections | 10; 33 | No trasladar el error de etiqueta al esquemático. |
 | COD-035 | VCOM | No copiar el capacitor de VCOM de 10 µF de la CDB4272; el datasheet vigente limita el capacitor principal de VCOM a 1 µF, más 0,1 µF. | MANDATORY_MANUFACTURER | CONFLICT_FOUND | CS-DS; CDB-DS | Typical Connection Diagram; CS4272 schematic | 23; 17 | Prevalece DS593F2 de 2021 sobre la placa de evaluación de 2003. |
@@ -114,7 +120,7 @@ Las páginas citadas son las numeradas por el propio documento. Se usa `N/A` par
 | AUD-001 | Muestreo | La frecuencia de muestreo inicial debe ser 48 kHz. | APPROVED_PROJECT_DECISION | VERIFIED | PRJ-REQ | Requisitos aprobados inicialmente | N/A | Corresponde a single-speed mode del CS4272. |
 | AUD-002 | Resolución | La resolución efectiva inicial debe ser 24 bits. | APPROVED_PROJECT_DECISION | VERIFIED | PRJ-REQ; CS-DS | Requisitos aprobados; Serial Audio Formats | N/A; 20 | El CS4272 admite I2S hasta 24 bits. |
 | AUD-003 | Slots | Se deben prever dos slots de 32 bits por frame. | APPROVED_PROJECT_DECISION | VERIFIED | PRJ-REQ; ESP-IDF-I2S | Requisitos aprobados; Standard Mode | N/A | Cada slot transportará 24 bits efectivos y padding; no confundir ancho de slot con resolución. |
-| AUD-004 | Canales | El enlace debe transportar dos canales, izquierdo y derecho. | MANDATORY_MANUFACTURER | VERIFIED | ESP-IDF-I2S; I2S-SPEC | Standard Mode; The I2S bus | N/A; 4–5 | El modo estándar usa dos slots. |
+| AUD-004 | Canales | El enlace inicial debe transportar dos canales, izquierdo y derecho. | APPROVED_PROJECT_DECISION | VERIFIED | ESP-IDF-I2S; I2S-SPEC | Standard Mode; The I2S bus | N/A; 4–5 | El modo estándar usa dos slots. |
 | AUD-005 | Roles | El ESP32-S3 debe actuar inicialmente como maestro de audio. | APPROVED_PROJECT_DECISION | VERIFIED | PRJ-REQ | Requisitos aprobados inicialmente | N/A | Debe generar MCLK, BCLK y LRCK en la propuesta inicial. |
 | AUD-006 | Roles | El CS4272 debe actuar inicialmente como esclavo. | APPROVED_PROJECT_DECISION | VERIFIED | PRJ-REQ; CS-DS | Requisitos aprobados; Master/Slave Mode | N/A; 27 | LRCK y SCLK/BCLK son entradas del CODEC. |
 | AUD-007 | LRCK | LRCK previsto es 48 kHz, igual a Fs. | APPROVED_PROJECT_DECISION | VERIFIED | PRJ-REQ; CS-DS | Requisitos aprobados; Master/Slave Mode | N/A; 27 | Derivación directa de la decisión Fs=48 kHz. |
@@ -123,7 +129,7 @@ Las páginas citadas son las numeradas por el propio documento. Se usa `N/A` par
 | AUD-010 | Datos | SDIN del CS4272 debe recibir el DOUT del ESP32-S3; transporta audio hacia el DAC. | MANDATORY_MANUFACTURER | VERIFIED | CS-DS | Pin Descriptions | 6 | Dirección ESP32-S3 → CS4272. |
 | AUD-011 | Datos | SDOUT del CS4272 debe alimentar el DIN del ESP32-S3; transporta audio desde el ADC. | MANDATORY_MANUFACTURER | VERIFIED | CS-DS | Pin Descriptions | 6 | Dirección CS4272 → ESP32-S3. |
 | AUD-012 | Compatibilidad | El ESP32-S3 debe configurarse en modo estándar de dos slots, que admite datos/slots de 8, 16, 24 o 32 bits. | MANDATORY_MANUFACTURER | VERIFIED | ESP-IDF-I2S | Clock Terminology; Standard Mode | N/A | La configuración efectiva 24/32 debe validarse con la versión elegida de ESP-IDF. |
-| AUD-013 | DMA | El transporte TX y RX debe usar DMA para evitar copia muestra a muestra por CPU. | MANDATORY_MANUFACTURER | VERIFIED | ESP-IDF-I2S | Introduction; Data Transport | N/A | Dimensionar buffers y latencia en firmware de validación. |
+| AUD-013 | DMA | El transporte TX y RX debe usar DMA para evitar copia muestra a muestra por CPU. | APPROVED_PROJECT_DECISION | VERIFIED | ESP-IDF-I2S | Introduction; Data Transport | N/A | Dimensionar buffers y latencia en firmware de validación. |
 | AUD-014 | Full-duplex | Se debe validar full-duplex estándar con TX y RX compartiendo clocks; ESP-IDF ofrece un ejemplo oficial simplex/full-duplex para ESP32-S3. | PENDING_VALIDATION | REQUIRES_REVIEW | ESP-IDF-I2S | Application Example, Standard TX/RX Usage | N/A | Confirmar asignación de controlador, canales, MCLK y GPIO. |
 | AUD-015 | Firmware | Antes de congelar el esquemático se deben medir MCLK, BCLK y LRCK y verificar frecuencia, duty cycle, estabilidad, formato I2S, alineación de 24 bits en slots de 32 y streaming DMA bidireccional. | PENDING_VALIDATION | PENDING | ESP-IDF-I2S; CS-DS | I2S Clock; Serial Audio Port Timing | N/A; 18–20 | Prueba obligatoria de firmware/hardware de bring-up. |
 
@@ -132,7 +138,7 @@ Las páginas citadas son las numeradas por el propio documento. Se usa `N/A` par
 | ID | Subsistema | Requisito | Clasificación | Estado | Fuente | Sección | Página | Observaciones |
 |---|---|---|---|---|---|---|---:|---|
 | CTL-001 | Función | I2C debe configurar y diagnosticar el CS4272; I2S debe transportar audio. | APPROVED_PROJECT_DECISION | VERIFIED | PRJ-DEC | DEC-003 | N/A | Mantener nombres y redes separados. |
-| CTL-002 | Dirección | La dirección esperada propuesta es 0x10 de 7 bits con AD0=AGND; 0x11 permanece bloqueada por la contradicción documentada en COD-013. | PROPOSED | REQUIRES_REVIEW | CS-DS | I2C Mode | 36 | No usar formato de 8 bits en la documentación del firmware. |
+| CTL-002 | Dirección | La dirección I2C de MB-001 debe ser 0x10 de 7 bits con AD0 conectado a AGND; no se utilizará 0x11. | APPROVED_PROJECT_DECISION | VERIFIED | CS-DS | I2C Mode | 36 | No usar formato de 8 bits en la documentación del firmware. La contradicción de AD0=VA se conserva solo como nota del datasheet. |
 | CTL-003 | Pull-ups | SDA y SCL requieren pull-ups externos al dominio lógico de 3,3 V; sus valores deben seleccionarse según capacitancia y tiempos de subida. | PENDING_VALIDATION | PENDING | CS-DS | I2C Switching Characteristics; I2C Mode | 21; 36 | No se seleccionan resistores en esta tarea. |
 | CTL-004 | Dirección eléctrica | El ESP32-S3 debe controlar SCL; SDA es bidireccional. El CS4272 opera como esclavo de control. | MANDATORY_MANUFACTURER | VERIFIED | CS-DS | Pin Descriptions; Control Port Interface | 6; 35–36 | SCL de control no es SCLK/BCLK de audio. |
 | CTL-005 | Velocidad | La configuración inicial de I2C no debe superar 100 kHz y debe cumplir los tiempos de Table 6. | MANDATORY_MANUFACTURER | VERIFIED | CS-DS | I2C Mode Control Port Switching Characteristics | 21 | Límite específico del CS4272. |
@@ -148,8 +154,8 @@ Las páginas citadas son las numeradas por el propio documento. Se usa `N/A` par
 |---|---|---|---|---|---|---|---:|---|
 | USB-001 | USB nativo | La placa debe usar el USB nativo del ESP32-S3, sin requerir un puente USB-UART para la ruta principal. | APPROVED_PROJECT_DECISION | VERIFIED | PRJ-REQ; ESP-IDF-USJ | Requisitos aprobados; Introduction | N/A | UART0 se conserva como respaldo de bring-up. |
 | USB-002 | Datos | USB D− debe ir a GPIO19 y USB D+ a GPIO20. | MANDATORY_MANUFACTURER | VERIFIED | ESP-IDF-USJ; ESP-IDF-USB | Hardware Requirements; Hardware Connection | N/A | Mantener polaridad y par diferencial. |
-| USB-003 | Programación | USB Serial/JTAG debe permitir flashing con `esptool`/`idf.py`, consola bidireccional y JTAG con OpenOCD. | MANDATORY_MANUFACTURER | VERIFIED | ESP-IDF-USJ | Introduction; Uploading the Application | N/A | La aplicación puede deshabilitar/reconfigurar accidentalmente los pines; conservar BOOT/RESET. |
-| USB-004 | OTG | El hardware debe conservar la posibilidad de USB device/OTG, pero el uso funcional y la convivencia con USB Serial/JTAG siguen pendientes. | PENDING_VALIDATION | PENDING | ESP-IDF-USB; ESP-ERR | Overview; External PHY Configuration; USBOTG-4289 | N/A; 9 | Los dos controladores comparten PHY interna y el lote puede limitar descarga OTG. |
+| USB-003 | Programación | MB-001 utilizará USB Serial/JTAG como ruta principal para flashing con `esptool`/`idf.py`, consola bidireccional y JTAG con OpenOCD. | APPROVED_PROJECT_DECISION | VERIFIED | ESP-IDF-USJ | Introduction; Uploading the Application | N/A | La aplicación puede deshabilitar/reconfigurar accidentalmente los pines; conservar BOOT/RESET. |
+| USB-004 | OTG | El soporte funcional USB OTG queda fuera del alcance inicial de MB-001 y no debe condicionar el esquemático más allá de documentar que comparte GPIO19/GPIO20 y la PHY interna con USB Serial/JTAG. | APPROVED_PROJECT_DECISION | VERIFIED | ESP-IDF-USB; ESP-ERR; PRJ-REQ | Overview; External PHY Configuration; USBOTG-4289; Alcance inicial | N/A; 9; N/A | Una revisión futura podrá reabrir USB OTG mediante una decisión explícita y validación de hardware/firmware. |
 | USB-005 | USB-C CC | Si MB-001 se implementa como sink/UFP con receptáculo USB-C, se deben disponer terminaciones pull-down en CC1 y CC2; topología y valores definitivos requieren revisar el paquete normativo USB-C 2.5. | PENDING_VALIDATION | REQUIRES_REVIEW | USB-C-SPEC | Cable and Connector Specification package | N/A | La landing oficial está catalogada, pero el ZIP normativo no fue auditado localmente. |
 | USB-006 | Protección | Se debe prever protección ESD de baja capacitancia en D+/D− y protección apropiada en VBUS/CC; el dispositivo concreto queda pendiente. | PENDING_VALIDATION | PENDING | ESP-HDG; USB-C-SPEC | Power Supply; Cable and Connector Specification package | 5; N/A | No se selecciona protector durante esta tarea. |
 | USB-007 | Integridad | Se deben reservar resistencias serie cerca del ESP32-S3 y footprints opcionales de capacitores a masa; 22/33 Ω son solo valores iniciales del fabricante. | RECOMMENDED_MANUFACTURER | REQUIRES_REVIEW | ESP-HDG | USB | 18 | Los valores definitivos requieren simulación/medición y no se congelan aquí. |
@@ -164,8 +170,10 @@ Las páginas citadas son las numeradas por el propio documento. Se usa `N/A` par
 |---|---|---|---|---|---|---|---:|---|
 | PWR-001 | Entrada | La entrada desde USB VBUS debe considerarse nominalmente 5 V. | APPROVED_PROJECT_DECISION | VERIFIED | PRJ-ARCH; ESP-IDF-USJ | Arquitectura general; Hardware Requirements | N/A | Disponibilidad de corriente depende del puerto/cargador y negociación USB-C. |
 | PWR-002 | Conversión | La mainboard debe obtener 3,3 V regulados desde la entrada de 5 V para ESP32-S3, VD y VL. | APPROVED_PROJECT_DECISION | VERIFIED | PRJ-REQ | Requisitos aprobados inicialmente | N/A | El regulador sigue sin seleccionar. |
-| PWR-003 | ESP32-S3 | El módulo debe alimentarse a 3,3 V nominales dentro de 3,0–3,6 V. | MANDATORY_MANUFACTURER | VERIFIED | ESP-MOD | Recommended Operating Conditions | 27 | La fuente externa debe entregar al menos 0,5 A al módulo. |
-| PWR-004 | CODEC | VA debe conectarse a la rama de 5 V manteniéndose entre 4,75 y 5,25 V. | APPROVED_PROJECT_DECISION | VERIFIED | PRJ-REQ; CS-DS | Requisitos aprobados; Specified Operating Conditions | N/A; 9 | Filtrado y caída de tensión deben conservar VA≥4,75 V. |
+| PWR-003A | ESP32-S3 | La alimentación del módulo debe permanecer entre 3,0 V y 3,6 V. | MANDATORY_MANUFACTURER | VERIFIED | ESP-MOD | Recommended Operating Conditions | 27 | La fuente externa debe entregar al menos 0,5 A al módulo. |
+| PWR-003B | ESP32-S3 | La rama destinada al módulo será de 3,3 V nominales. | APPROVED_PROJECT_DECISION | VERIFIED | PRJ-REQ | Requisitos aprobados inicialmente | N/A | Debe cumplir el rango de PWR-003A bajo carga y transitorios. |
+| PWR-004A | CODEC | VA debe mantenerse entre 4,75 V y 5,25 V. | MANDATORY_MANUFACTURER | VERIFIED | CS-DS | Specified Operating Conditions | 9 | Filtrado y caída de tensión deben conservar VA ≥ 4,75 V. |
+| PWR-004B | CODEC | MB-001 conectará VA a una rama nominal de 5 V. | APPROVED_PROJECT_DECISION | VERIFIED | PRJ-REQ | Requisitos aprobados | N/A | La implementación debe cumplir PWR-004A con cables y fuentes USB reales. |
 | PWR-005 | CODEC | VD y VL deben alimentarse como ramas documentadas separadamente, ambas a 3,3 V nominales. | APPROVED_PROJECT_DECISION | VERIFIED | PRJ-REQ; CS-DS | Requisitos aprobados; Specified Operating Conditions | N/A; 9 | No unir conceptos aunque puedan compartir regulador. |
 | PWR-006 | Presupuesto | El presupuesto base debe contemplar ≥0,5 A para el módulo más hasta 53 mA de VA y 28 mA digitales máximos del CS4272, antes de otras cargas. | PROPOSED | VERIFIED | ESP-MOD; CS-DS | Recommended Operating Conditions; DC Electrical Characteristics | 27; 17 | Suma conservadora mínima de 581 mA; no incluye transitorios, LEDs, pérdidas ni placas externas. |
 | PWR-007 | Transitorios | La fuente de 3,3 V y su desacoplamiento deben tolerar transitorios de RF sin reset, caída de clocks ni ruido audible. | RECOMMENDED_MANUFACTURER | REQUIRES_REVIEW | ESP-HDG | Power Supply | 5 | El margen dinámico se validará con medición. |
@@ -225,8 +233,8 @@ Las páginas citadas son las numeradas por el propio documento. Se usa `N/A` par
 | DIA-007 | Control | Prever medición de SDA. | PROPOSED | REQUIRES_REVIEW | CS-DS | I2C Mode | 36 | Punto compatible con bus open-drain. |
 | DIA-008 | Control | Prever medición de SCL. | PROPOSED | REQUIRES_REVIEW | CS-DS | I2C Mode | 36 | No confundir con SCLK. |
 | DIA-009 | Control | Prever medición de CODEC_RST. | PROPOSED | REQUIRES_REVIEW | CS-DS | Recommended Power-Up Sequence | 27 | Necesario para correlacionar inicialización. |
-| DIA-010 | USB | Prever acceso medible a USB D+. | PROPOSED | REQUIRES_REVIEW | ESP-HDG | USB PCB Layout | 30 | Debe evitarse un test-point con stub significativo. |
-| DIA-011 | USB | Prever acceso medible a USB D−. | PROPOSED | REQUIRES_REVIEW | ESP-HDG | USB PCB Layout | 30 | Debe conservar simetría del par. |
+| DIA-010 | USB | Permitir medición de USB D+ únicamente mediante pads inline, pads de componentes serie o puntos de sondeo sin stub; no colocar un testpoint ramificado convencional. | PROPOSED | REQUIRES_REVIEW | ESP-HDG | USB PCB Layout | 30 | La solución debe conservar impedancia, simetría y continuidad del par. |
+| DIA-011 | USB | Permitir medición de USB D− únicamente mediante pads inline, pads de componentes serie o puntos de sondeo sin stub; no colocar un testpoint ramificado convencional. | PROPOSED | REQUIRES_REVIEW | ESP-HDG | USB PCB Layout | 30 | Debe conservarse simetría respecto de D+ y evitar ramificaciones. |
 | DIA-012 | Alimentación | Prever punto de prueba de 5 V/VBUS. | PROPOSED | VERIFIED | PRJ-ARCH | Arquitectura general | N/A | Identificar lado protegido/filtrado cuando se defina. |
 | DIA-013 | Alimentación | Prever punto de prueba de 3,3 V. | PROPOSED | VERIFIED | PRJ-REQ | Requisitos aprobados inicialmente | N/A | Medir droop durante RF/audio. |
 | DIA-014 | Analógico | Prever medición de VCOM con instrumento de alta impedancia. | PROPOSED | REQUIRES_REVIEW | CS-DS | DC Electrical Characteristics | 17 | No cargar el nodo; máximo 1 µA. |
@@ -238,7 +246,7 @@ Las páginas citadas son las numeradas por el propio documento. Se usa `N/A` par
 ## Open Questions
 
 - ¿Qué lote, revisión de silicio y PW tendrá el módulo ESP32-S3-WROOM-1-N16R8 real?
-- ¿Se usará USB Serial/JTAG, USB OTG device o ambos en distintas fases? ¿Se necesita depuración simultánea?
+- ¿Una revisión futura necesitará USB OTG device además de USB Serial/JTAG? Esta función queda fuera del alcance inicial de MB-001.
 - ¿Qué GPIO se asignarán finalmente a I2S, I2C, CODEC_RST, MUTEC y DEBUG_TIMING?
 - ¿Qué fuente generará MCLK=12,288 MHz y con qué precisión/jitter?
 - ¿Se reservará una alternativa de clock externo o cristal para pruebas?
@@ -250,7 +258,7 @@ Las páginas citadas son las numeradas por el propio documento. Se usa `N/A` par
 
 ## Contradictions Found
 
-1. **AD0 a VA frente al límite de entrada digital.** CS-DS pp. 35–36 indica unir AD0 a VA para obtener nivel alto, pero p. 9 limita las entradas digitales a `VL + 0,3 V`. Con VA=5 V y VL=3,3 V esto queda en conflicto. Se propone AD0=AGND/0x10, sin aprobarlo hasta aclaración humana o del fabricante.
+1. **AD0 a VA frente al límite de entrada digital.** CS-DS pp. 35–36 indica unir AD0 a VA para obtener nivel alto, pero p. 9 limita las entradas digitales a `VL + 0,3 V`. Con VA=5 V y VL=3,3 V esto queda en conflicto. MB-001 adopta AD0=AGND/0x10 como solución segura; la indicación AD0=VA queda descartada para esta revisión y la contradicción se conserva como nota documental.
 2. **Default de PDN.** La tabla rápida de registro 07h en CS-DS p. 37 muestra PDN=0, mientras §8.7.5 p. 44 afirma que PDN está activo por defecto. Se exige escribir explícitamente 0x03 durante la secuencia recomendada y no depender del default.
 3. **Capacitor de VCOM.** La CDB4272 de 2003 usa 10 µF + 0,1 µF, pero DS593F2 de 2021 limita el capacitor principal a 1 µF. Prevalece el datasheet vigente.
 4. **Nombre VREF/FILT+.** CS-DS §5.7 p. 34 usa “VREF”, mientras pinout y Figure 8 denominan el nodo FILT+. Debe confirmarse que la instrucción se refiere a FILT+.
@@ -262,7 +270,7 @@ No se encontró contradicción normativa entre la PCB inicial de dos capas y la 
 ## Missing Information
 
 - Identificación física de revisión/PW del módulo que se comprará.
-- Confirmación oficial de Cirrus sobre AD0 alto con VA=5 V y VL=3,3 V.
+- Confirmación oficial de Cirrus sobre AD0 alto con VA=5 V y VL=3,3 V, únicamente para cerrar la inconsistencia documental; MB-001 ya adopta AD0=AGND.
 - Versión exacta de ESP-IDF y configuración del driver I2S/I2C/USB.
 - Resultados de una prueba de generación simultánea MCLK/BCLK/LRCK a 48 kHz.
 - Especificaciones auditadas del receptáculo USB-C y del paquete normativo USB Type-C 2.5.
@@ -284,7 +292,6 @@ No se encontró contradicción normativa entre la PCB inicial de dos capas y la 
 - aprobar el pinout definitivo, incluidos I2S, I2C, reset, mute y DEBUG_TIMING;
 - aprobar la arquitectura definitiva de reloj y su fuente;
 - decidir si se reserva clock externo/cristal alternativo;
-- resolver AD0 y la dirección I2C tras revisar la contradicción de niveles;
 - definir control/adaptación de AMUTEC y BMUTEC;
 - definir estrategia de masa y alimentación de las placas analógicas;
 - definir dimensiones de PCB y restricciones mecánicas de antena;
@@ -295,4 +302,4 @@ No se encontró contradicción normativa entre la PCB inicial de dos capas y la 
 - definir política de conexión del shield USB-C;
 - validar con firmware MCLK, BCLK, LRCK, I2S full-duplex, DMA, I2C y USB antes de congelar el esquemático.
 
-Hasta cerrar estas decisiones y resolver las contradicciones, MB-001 permanece como borrador técnico y no está autorizada para implementación en KiCad.
+Hasta cerrar las decisiones requeridas y mitigar cualquier contradicción que afecte la implementación, MB-001 permanece como borrador técnico y no está autorizada para implementación en KiCad.
