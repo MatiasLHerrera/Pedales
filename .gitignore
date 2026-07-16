@@ -17,3 +17,16 @@ documentation/**/*.7z
 documentation/**/*.step
 documentation/**/*.stp
 documentation/**/*.dxf
+
+# KiCad local preferences
+*.kicad_prl
+
+# KiCad lock files
+~*.lck
+*.kicad_sch.lck
+*.kicad_pcb.lck
+*.kicad_pro.lck
+
+# KiCad automatic backups
+*-backups/
+*.kicad-bak
