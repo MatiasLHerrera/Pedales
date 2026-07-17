@@ -5,6 +5,66 @@
 	(uuid "e63e39d7-6ac0-4ffd-8aa3-1841a4541b55")
 	(paper "A4")
 	(lib_symbols)
+	(sheet
+		(at 38.1 76.2)
+		(size 38.1 25.4)
+		(stroke (width 0) (type default))
+		(fill (color 0 0 0 0.000))
+		(uuid "1c6b0f46-27aa-4ed8-9f7c-4895472234b3")
+		(property "Sheetname" "01_POWER"
+			(at 38.1 74.93 0)
+			(effects (font (size 1.27 1.27)) (justify left bottom))
+		)
+		(property "Sheetfile" "01_POWER.kicad_sch"
+			(at 38.1 76.2 0)
+			(effects (font (size 1.27 1.27)) (justify left top))
+		)
+		(instances
+			(project "MB001_Mainboard"
+				(path "/1c6b0f46-27aa-4ed8-9f7c-4895472234b3" (page "2"))
+			)
+		)
+	)
+	(sheet
+		(at 88.9 76.2)
+		(size 38.1 25.4)
+		(stroke (width 0) (type default))
+		(fill (color 0 0 0 0.000))
+		(uuid "51c728ad-86c1-45f2-a9c8-d9d2e4f0076e")
+		(property "Sheetname" "02_ESP32"
+			(at 88.9 74.93 0)
+			(effects (font (size 1.27 1.27)) (justify left bottom))
+		)
+		(property "Sheetfile" "02_ESP32.kicad_sch"
+			(at 88.9 76.2 0)
+			(effects (font (size 1.27 1.27)) (justify left top))
+		)
+		(instances
+			(project "MB001_Mainboard"
+				(path "/51c728ad-86c1-45f2-a9c8-d9d2e4f0076e" (page "3"))
+			)
+		)
+	)
+	(sheet
+		(at 139.7 76.2)
+		(size 38.1 25.4)
+		(stroke (width 0) (type default))
+		(fill (color 0 0 0 0.000))
+		(uuid "893f2d6a-0ab2-4a3f-bd18-6b1ec9e8fd44")
+		(property "Sheetname" "03_CODEC"
+			(at 139.7 74.93 0)
+			(effects (font (size 1.27 1.27)) (justify left bottom))
+		)
+		(property "Sheetfile" "03_CODEC.kicad_sch"
+			(at 139.7 76.2 0)
+			(effects (font (size 1.27 1.27)) (justify left top))
+		)
+		(instances
+			(project "MB001_Mainboard"
+				(path "/893f2d6a-0ab2-4a3f-bd18-6b1ec9e8fd44" (page "4"))
+			)
+		)
+	)
 	(sheet_instances
 		(path "/"
 			(page "1")
