@@ -29,7 +29,7 @@ No se agregan hojas independientes de debug, expansión ni audio analógico en e
 
 - contener los símbolos jerárquicos de `01_POWER`, `02_ESP32` y `03_CODEC`;
 - mostrar la arquitectura general;
-- interconectar alimentación, control, audio digital y señales analógicas;
+- interconectar alimentación, reset, audio digital y señales analógicas;
 - permitir comprender el sistema completo sin entrar en detalles internos.
 
 ### Contenido excluido
@@ -47,8 +47,9 @@ No se agregan hojas independientes de debug, expansión ni audio analógico en e
 
 ### Responsabilidades
 
-- recibir `+5V` desde el USB-C ubicado funcionalmente en `02_ESP32`;
+- recibir `VBUS` desde el USB-C ubicado funcionalmente en `02_ESP32`;
 - incorporar en una etapa posterior la protección y limitación de entrada, todavía pendientes de selección;
+- generar la red protegida y filtrada `+5V` desde `VBUS`;
 - generar `+3V3`;
 - distribuir `+5V` y `+3V3`;
 - alimentar el ESP32-S3 y el CS4272;
@@ -60,7 +61,8 @@ No se agregan hojas independientes de debug, expansión ni audio analógico en e
 
 | Red | Interpretación | Tensión aprobada | Derivación |
 |---|---|---:|---|
-| `+5V` | Alimentación general de 5 V | 5 V nominales | USB-C |
+| `VBUS` | Entrada directa desde USB-C, antes de protección | 5 V nominales | USB-C |
+| `+5V` | Alimentación protegida y filtrada de la placa | 5 V nominales | `VBUS`, mediante protección y filtrado pendientes |
 | `+3V3` | Alimentación general de 3,3 V | 3,3 V nominales | `+5V`, mediante regulación pendiente de selección |
 | `VA` | Alimentación analógica del CS4272 | 5 V nominales | `+5V` |
 | `VD` | Alimentación digital interna del CS4272 | 3,3 V nominales | `+3V3` |
@@ -86,7 +88,7 @@ Esta tarea no selecciona regulador, ferritas, filtros, fusible, protección cont
 - incluir el desacoplamiento propio del módulo;
 - conservar UART0 como interfaz de respaldo;
 - soportar USB Serial/JTAG;
-- exponer las señales I2S e I2C;
+- exponer las señales I2S;
 - controlar el reset del CS4272;
 - prever `DEBUG_TIMING`;
 - reservar GPIO de expansión, cuya definición permanece pendiente.
@@ -105,11 +107,9 @@ Esta tarea no selecciona regulador, ferritas, filtros, fusible, protección cont
 | `LRCK` | `02_ESP32` → `03_CODEC` |
 | `SDIN` | `02_ESP32` → `03_CODEC` |
 | `SDOUT` | `03_CODEC` → `02_ESP32` |
-| `SDA` | Bidireccional |
-| `SCL` | `02_ESP32` → `03_CODEC` |
 | `CODEC_RST` | `02_ESP32` → `03_CODEC` |
 
-No se asignan GPIO definitivos a I2S, I2C, `CODEC_RST`, mute, `DEBUG_TIMING` ni expansión en esta tarea.
+No se asignan GPIO definitivos a I2S, `CODEC_RST`, mute, `DEBUG_TIMING` ni expansión en esta tarea. No se reservan GPIO para SDA o SCL porque MB-001 no implementa I2C ni SPI para el CODEC.
 
 ## 03_CODEC
 
@@ -121,7 +121,13 @@ No se asignan GPIO definitivos a I2S, I2C, `CODEC_RST`, mute, `DEBUG_TIMING` ni 
 - incluir los desacoplamientos específicos del CODEC;
 - implementar los nodos `VCOM` y `FILT+` según el datasheet vigente;
 - recibir el reset del CODEC;
-- implementar I2C con AD0 conectado a AGND y dirección de 7 bits `0x10`;
+- operar inicialmente en Stand-Alone Mode;
+- usar AD0/CS como `I2S_LJ`, SDA/CDIN como `M1` y SCL/CCLK como `M0`;
+- mantener `I2S_LJ` alto mediante una resistencia pull-up de 10 kΩ a VL;
+- mantener `M1` bajo y `M0` alto;
+- seleccionar I2S, Single Speed para 4 kHz a 50 kHz y de-emphasis desactivado;
+- dejar visibles en el futuro esquemático los straps de `I2S_LJ`, `M1` y `M0`;
+- no implementar I2C, SPI, dirección `0x10`, lectura de Chip ID ni secuencia CPEN/PDN por firmware;
 - implementar I2S;
 - recibir MCLK externo desde el ESP32-S3 como propuesta inicial;
 - conectar XTI a GND y dejar XTO sin conexión;
@@ -152,7 +158,7 @@ No se asignan GPIO definitivos a I2S, I2C, `CODEC_RST`, mute, `DEBUG_TIMING` ni 
 
 ### Reset
 
-`CODEC_RST` debe ser una entrada proveniente de `02_ESP32` y debe mantener el CODEC en reset hasta que alimentación y clocks estén estables. La secuencia concreta se implementará y validará posteriormente.
+`CODEC_RST` debe ser una entrada proveniente de `02_ESP32`. Debe permanecer bajo hasta que las alimentaciones, MCLK, BCLK, LRCK, `I2S_LJ`, `M1` y `M0` estén estables; después puede liberarse para iniciar el CODEC. No se realizarán escrituras de registros tras liberar reset. SDIN debe mantenerse en un estado definido durante el arranque para evitar audio no deseado. La secuencia exacta se validará mediante firmware y mediciones de bring-up.
 
 ### Contenido excluido
 
@@ -162,7 +168,8 @@ Esta hoja no incluirá preamplificadores, jacks, amplificadores de salida ni ada
 
 | Señal | Origen | Destino | Dirección | Dominio | Tipo | Estado | Observaciones |
 |---|---|---|---|---|---|---|---|
-| `+5V` | `02_ESP32` / USB-C | `01_POWER` | Hacia alimentación | 5 V | Alimentación | APPROVED | La protección y limitación permanecen pendientes de selección. |
+| `VBUS` | `02_ESP32` / USB-C | `01_POWER` | Hacia alimentación | 5 V sin proteger | Alimentación | APPROVED | Entrada directa anterior a protección y filtrado. |
+| `+5V` | `01_POWER` | `01_POWER`, `03_CODEC` | Distribución local | 5 V protegido | Alimentación | APPROVED | Se origina después de protección y filtrado pendientes; alimenta la derivación de VA y el futuro regulador. |
 | `+3V3` | `01_POWER` | `02_ESP32` | Hacia ESP32 | 3,3 V | Alimentación | APPROVED | El regulador y el presupuesto de corriente están pendientes. |
 | `VA` | `01_POWER` | `03_CODEC` | Hacia CODEC | 5 V analógico | Alimentación | APPROVED | Red funcional separada derivada de `+5V`; filtrado pendiente. |
 | `VD` | `01_POWER` | `03_CODEC` | Hacia CODEC | 3,3 V digital | Alimentación | APPROVED | Red funcional separada derivada de `+3V3`; filtrado pendiente. |
@@ -173,8 +180,6 @@ Esta hoja no incluirá preamplificadores, jacks, amplificadores de salida ni ada
 | `LRCK` | `02_ESP32` | `03_CODEC` | Salida → entrada | 3,3 V lógico | Reloj I2S | PENDING_GPIO_ASSIGNMENT | Frecuencia inicial prevista: 48 kHz. |
 | `SDIN` | `02_ESP32` | `03_CODEC` | Salida → entrada | 3,3 V lógico | Datos I2S | PENDING_GPIO_ASSIGNMENT | Nombre desde la perspectiva del CS4272; alimenta el DAC. |
 | `SDOUT` | `03_CODEC` | `02_ESP32` | Salida → entrada | 3,3 V lógico | Datos I2S | PENDING_GPIO_ASSIGNMENT | Nombre desde la perspectiva del CS4272; proviene del ADC. |
-| `SDA` | `02_ESP32`, `03_CODEC` | `03_CODEC`, `02_ESP32` | Bidireccional | 3,3 V lógico | Datos I2C | PENDING_GPIO_ASSIGNMENT | Pull-up y GPIO pendientes de selección. |
-| `SCL` | `02_ESP32` | `03_CODEC` | Salida → entrada | 3,3 V lógico | Reloj I2C | PENDING_GPIO_ASSIGNMENT | No confundir con BCLK/SCLK del puerto de audio. |
 | `CODEC_RST` | `02_ESP32` | `03_CODEC` | Salida → entrada | 3,3 V lógico | Control | PENDING_GPIO_ASSIGNMENT | Secuencia concreta pendiente de implementación y validación. |
 | `AINA+` | `00_TOP` / futura interfaz | `03_CODEC` | Hacia CODEC | Analógico diferencial | Entrada ADC | PENDING_INTERFACE_DEFINITION | No se define conector ni etapa analógica. |
 | `AINA-` | `00_TOP` / futura interfaz | `03_CODEC` | Hacia CODEC | Analógico diferencial | Entrada ADC | PENDING_INTERFACE_DEFINITION | Par diferencial con `AINA+`. |
@@ -191,6 +196,8 @@ Esta hoja no incluirá preamplificadores, jacks, amplificadores de salida ni ada
 
 - usar nombres cortos y coincidentes con los datasheets cuando sea posible;
 - usar `+5V` y `+3V3` para alimentaciones generales;
+- usar `VBUS` exclusivamente para los 5 V directos del USB-C antes de protección;
+- usar `+5V` exclusivamente para la alimentación protegida y filtrada de la placa;
 - usar `VA`, `VD` y `VL` para las ramas funcionales del CS4272;
 - usar `GND` como referencia común;
 - usar `BCLK` como nombre del reloj de bits del proyecto;
@@ -224,6 +231,7 @@ Esta hoja no incluirá preamplificadores, jacks, amplificadores de salida ni ada
 ### 03_CODEC
 
 - filtros de alimentación;
+- implementación física de los straps `I2S_LJ`, `M1` y `M0`;
 - conectores analógicos;
 - tratamiento de `AMUTEC` y `BMUTEC`;
 - puntos de prueba;
@@ -233,12 +241,14 @@ Esta hoja no incluirá preamplificadores, jacks, amplificadores de salida ni ada
 ## Decisiones ya aprobadas o fijadas para esta arquitectura documental
 
 - alimentaciones generales `+5V` y `+3V3`;
+- `VBUS` como entrada directa desde USB-C y `+5V` como red posterior a protección;
 - `VA` a 5 V;
 - `VD` a 3,3 V;
 - `VL` a 3,3 V;
 - ESP32-S3 a 3,3 V;
-- AD0 conectado a AGND;
-- dirección I2C de 7 bits `0x10`;
+- CS4272 en Stand-Alone Mode sin I2C ni SPI;
+- `I2S_LJ` alto mediante 10 kΩ a VL, `M1` bajo y `M0` alto;
+- formato I2S, Single Speed a 48 kHz y de-emphasis desactivado;
 - ESP32-S3 como maestro inicial de audio;
 - CS4272 como esclavo inicial de audio;
 - MCLK externo desde el ESP32-S3 como propuesta inicial;

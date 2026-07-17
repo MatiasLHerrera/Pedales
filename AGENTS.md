@@ -45,7 +45,7 @@ La primera placa prevista es una mainboard de desarrollo basada en:
 - CODEC de audio CS4272;
 - USB-C para alimentación y programación mediante USB nativo;
 - comunicación I2S para audio;
-- comunicación I2C para configuración y diagnóstico del CODEC;
+- configuración inicial del CODEC mediante Stand-Alone Mode y pines de modo;
 - entradas y salidas analógicas diferenciales expuestas mediante conectores;
 - placas analógicas externas intercambiables.
 
@@ -75,7 +75,9 @@ Los parámetros iniciales aprobados son:
 - ESP32-S3 como maestro de audio inicial;
 - CS4272 como esclavo inicial;
 - I2S para transportar audio;
-- I2C para configurar y leer registros del CS4272;
+- no implementar I2C ni SPI en la primera revisión;
+- configurar el CS4272 en Stand-Alone Mode mediante `I2S_LJ`, `M1` y `M0`;
+- usar VBUS para los 5 V directos del USB-C y +5V para la red protegida de la placa;
 - alimentación analógica VA del CS4272: 5 V;
 - alimentación digital VD del CS4272: 3,3 V;
 - alimentación lógica VL del CS4272: 3,3 V;
@@ -337,4 +339,3 @@ DETENERSE, DOCUMENTARLA Y SOLICITAR REVISIÓN.
 No resolver silenciosamente una incertidumbre mediante una suposición.
 
 ---
-

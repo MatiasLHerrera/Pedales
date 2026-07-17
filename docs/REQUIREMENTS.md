@@ -7,6 +7,8 @@
 - PENDIENTE
 - DESCARTADO
 - REQUIERE VALIDACIÓN
+- SUPERSEDED
+- REPLACED
 
 ## Requisitos aprobados inicialmente
 
@@ -14,7 +16,11 @@
 - CS4272;
 - USB-C nativo;
 - I2S para audio;
-- I2C para control;
+- CS4272 en Stand-Alone Mode;
+- configuración del CS4272 mediante `I2S_LJ`, `M1` y `M0`;
+- I2C y SPI no implementados en MB-001;
+- VBUS para los 5 V directos del USB-C antes de protección;
+- +5V para la alimentación protegida y filtrada de la placa;
 - 48 kHz;
 - 24 bits efectivos;
 - slots de 32 bits previstos;
@@ -28,6 +34,11 @@
 - montaje manual;
 - preferencia por 0805.
 
+## Requisitos reemplazados
+
+- **SUPERSEDED:** I2C para configurar y diagnosticar el CS4272.
+- **REPLACED BY:** Stand-Alone Mode con configuración por pines; no habrá acceso a registros, lectura de Chip ID, dirección I2C ni GPIO reservados para SDA/SCL en la primera revisión.
+
 ## Requisitos pendientes
 
 - regulador de 3,3 V;
@@ -40,4 +51,3 @@
 - fabricante;
 - selección de componentes analógicos;
 - arquitectura de firmware.
-
