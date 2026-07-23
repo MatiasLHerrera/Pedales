@@ -2,13 +2,18 @@
 
 ## Estado
 
-PROPUESTA APROBADA PARA DOCUMENTACIÓN — IMPLEMENTACIÓN KICAD AÚN NO AUTORIZADA
+PROPUESTA APROBADA PARA DOCUMENTACIÓN — JERARQUÍA KICAD VACÍA IMPLEMENTADA Y
+REVISADA MANUALMENTE; LOS CIRCUITOS TODAVÍA NO ESTÁN AUTORIZADOS
 
 ## Propósito
 
-Definir la división funcional del esquemático MB-001 antes de crear hojas, componentes o conexiones en KiCad.
+Definir la división funcional del esquemático MB-001 y documentar el estado de
+la jerarquía vacía ya implementada en KiCad.
 
-Este documento establece responsabilidades, interfaces y nombres de red. No selecciona componentes, no asigna GPIO definitivos, no diseña circuitos y no autoriza la creación de hojas jerárquicas reales.
+Este documento establece responsabilidades, interfaces y nombres de red. La
+jerarquía vacía fue implementada y revisada manualmente como estructura. No
+selecciona componentes, no asigna GPIO definitivos, no diseña circuitos y no
+autoriza la implementación eléctrica de las hojas.
 
 ## Jerarquía de hojas
 

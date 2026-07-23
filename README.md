@@ -15,7 +15,8 @@ Proyecto modular de hardware y firmware para procesamiento de audio de guitarra 
 
 Fase de documentación y definición de requisitos.
 
-Aún no existen esquemáticos, PCB ni firmware aprobados.
+Existe una jerarquía KiCad `structure-only` para MB-001, pero todavía no existe
+diseño eléctrico aprobado, PCB ruteado ni firmware.
 
 ## Método de trabajo
 
@@ -27,4 +28,3 @@ El proyecto se desarrolla mediante tareas pequeñas, revisión intermedia y docu
 - `references`: documentación oficial, diseños de referencia y proyectos de inspiración, organizados por procedencia.
 
 La estructura crecerá progresivamente a medida que las tareas del proyecto lo requieran.
-
